@@ -4,9 +4,12 @@
  */
 
 /**
- * Modified by:
+ * Modified by: Jesse Rost <rostj@msoe.edu>
  * 
- * Brief summary of modifications:
+ * Brief summary of modifications: 
+ * - Removed the exit() call from the SIGINT handler.
+ * - The program now continues running after receiving SIGINT.
+ * - The process must be forcefully terminated using SIGKILL (cannot be caught or ignored).
  */
 
 
@@ -16,21 +19,19 @@
 #include <stdio.h>
 
 /**
- * @brief Signal handler for SIGINT - prints a message and exits
+ * @brief Signal handler for SIGINT - prints a message but does not exit.
  */
 void handle_signal() {
-    printf("Received a signal\n");
-    exit(1);
+    printf("Received a signal (SIGINT)\n");
 }
 
 int main() {
-
-    // Register for the signal
+    // Register the signal handler for SIGINT (Ctrl+C)
     signal(SIGINT, handle_signal);
 
-    // Wait until a signal is received
-    while(1) {
-        printf("Sleeping\n");
+    // Loop indefinitely
+    while (1) {
+        printf("Sleeping...\n");
         sleep(1);
     }
 
