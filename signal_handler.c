@@ -1,17 +1,25 @@
 /**
- * @file signal_handler.c
- * @brief Sets a signal handler for SIGINT, the handler prints a message and then quits
+ * @file        : signal_handler.c
+ * @brief       : Sets a signal handler for SIGINT; handler prints a message and continues.
+ *
+ * Details      :
+ * - Installs a SIGINT handler using signal().
+ * - The handler prints a message but does not exit.
+ * - The program loops and sleeps, demonstrating continued execution.
+ *
+ * Course       : CPE 2600 – Systems Programming
+ * Section      : 112
+ * Assignment   : Signals Lab
+ * Modified by  : Jesse Rost <rostj@msoe.edu>
+ * Date         : 11/10/25
+ *
+ * Compile      : gcc -Wall -Wextra signal_handler.c -o signal_handler
+ * Usage        : ./signal_handler
+ *
+ * Algorithm
+ *  - Register SIGINT handler.
+ *  - Loop forever printing and sleeping.
  */
-
-/**
- * Modified by: Jesse Rost <rostj@msoe.edu>
- * 
- * Brief summary of modifications: 
- * - Removed the exit() call from the SIGINT handler.
- * - The program now continues running after receiving SIGINT.
- * - The process must be forcefully terminated using SIGKILL (cannot be caught or ignored).
- */
-
 
 #include <signal.h>
 #include <unistd.h>
@@ -21,15 +29,16 @@
 /**
  * @brief Signal handler for SIGINT - prints a message but does not exit.
  */
-void handle_signal() {
+void handle_signal(int signum) {
+    (void)signum;
     printf("Received a signal (SIGINT)\n");
 }
 
-int main() {
-    // Register the signal handler for SIGINT (Ctrl+C)
+int main(void) {
+    /* Register the signal handler for SIGINT (Ctrl+C) */
     signal(SIGINT, handle_signal);
 
-    // Loop indefinitely
+    /* Loop indefinitely */
     while (1) {
         printf("Sleeping...\n");
         sleep(1);

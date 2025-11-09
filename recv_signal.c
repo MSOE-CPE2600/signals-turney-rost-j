@@ -1,22 +1,25 @@
 /**
- * @file recv_signal.c
- * @brief Program that registers a SIGUSR1 handler using sigaction.
- *        The handler retrieves and prints the integer value sent via sigqueue().
+ * @file        : recv_signal.c
+ * @brief       : Registers a SIGUSR1 handler using sigaction; prints sival_int payload.
  *
- * Modified by: Jesse Rost <rostj@msoe.edu>
+ * Details      :
+ * - Uses SA_SIGINFO to access the siginfo_t struct (si_value.sival_int).
+ * - Waits indefinitely for SIGUSR1.
+ * - Prints the integer value sent via sigqueue() by the sender.
  *
- * Brief summary of program:
- * - Registers a handler for SIGUSR1 using sigaction.
- * - Uses SA_SIGINFO to access the siginfo_t struct and retrieve sival_int.
- * - Waits indefinitely for incoming signals.
- * - When a signal is received, prints the integer value that was sent.
+ * Course       : CPE 2600 – Systems Programming
+ * Section      : 112
+ * Assignment   : Signals Lab
+ * Modified by  : Jesse Rost <rostj@msoe.edu>
+ * Date         : 11/10/25
  *
- * Compile with:
- *     gcc -Wall -Wextra recv_signal.c -o recv_signal
+ * Compile      : gcc -Wall -Wextra recv_signal.c -o recv_signal
+ * Usage        : ./recv_signal
  *
- * Run this program first, note the PID, then run send_signal with that PID:
- *     ./recv_signal
- *     ./send_signal <pid>
+ * Algorithm
+ *  - Configure struct sigaction with SA_SIGINFO.
+ *  - Register handler for SIGUSR1.
+ *  - Pause forever, printing sival_int when received.
  */
 
 #define _POSIX_C_SOURCE 200809L
@@ -25,7 +28,7 @@
 #include <string.h>
 #include <unistd.h>
 
-// Handler for SIGUSR1 using siginfo_t
+/* Handler for SIGUSR1 using siginfo_t */
 void handle_sigusr1(int signum, siginfo_t *info, void *context)
 {
     (void)signum;
@@ -39,7 +42,7 @@ int main(void)
     memset(&sa, 0, sizeof(sa));
 
     sa.sa_sigaction = handle_sigusr1;
-    sa.sa_flags = SA_SIGINFO; // Required for accessing si_value
+    sa.sa_flags = SA_SIGINFO; /* Required for accessing si_value */
 
     if (sigaction(SIGUSR1, &sa, NULL) == -1)
     {
@@ -50,7 +53,7 @@ int main(void)
     printf("Receiver process PID: %d\n", getpid());
     printf("Waiting for SIGUSR1...\n");
 
-    // Wait indefinitely for incoming signals
+    /* Wait indefinitely for incoming signals */
     while (1)
     {
         pause();
